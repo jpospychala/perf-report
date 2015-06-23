@@ -9,6 +9,10 @@
     "express": "^4.12.3",
     "ramda": "^0.13.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jpospychala/perf-report"
+  }
   "scripts": {
     "start": "node server.js"
   },
