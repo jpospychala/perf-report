@@ -3,7 +3,7 @@ var fs = require('fs');
 var R = require('ramda');
 var app = express();
 
-var report_dir = process.env.REPORT_DIR || './report';
+var report_dir = process.env.REPORT_DIR || '.';
 
 app.set('port', (process.env.PORT || 3000));
 app.use(express.static('static'));
