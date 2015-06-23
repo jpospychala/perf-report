@@ -1,0 +1,112 @@
+<!doctype html>
+<html class="no-js" lang="en" ng-app="app">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report tool</title>
+  <link rel="stylesheet" href="css/foundation.css" />
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/app.css">
+  <script src="js/vendor/modernizr.js"></script>
+  <script src="lib/d3.v3.js"></script>
+  <script src="lib/ramda.min.js"></script>
+  <script src="lib/angular.min.js"></script>
+  <script src="report.js"></script>
+  <style>
+  .row {
+    font-size: 14px;
+  }
+  .hit {
+    margin-top: 20px;
+    border-bottom: 1px solid #ccc
+  }
+  </style>
+</head>
+<body>
+  <div ng-controller="DiagramCtrl">
+    <div class="row">
+      <h2>&nbsp;</h2>
+    </div>
+    <div class="row">
+      Benchmark
+      <span ng-repeat="detail in options">
+        {{detail.label}}
+        <a data-dropdown="opt{{$index}}" aria-controls="opt{{$index}}" aria-expanded="true">{{detail.selected.label}}</a>
+        <ul id="opt{{$index}}" class="f-dropdown" data-dropdown-content aria-hidden="false" tabindex="-1">
+          <li ng-repeat="option in detail.options"><a href="#" ng-click="detail.selected = option; find()">{{option.label}}</a></li>
+        </ul>
+        {{detail.label2}}
+      </span>
+      <br/>
+      <span ng-repeat="detail in selected(details)">
+        {{detail.label}}
+        <a data-dropdown="detaildrop{{$index}}" aria-controls="detaildrop{{$index}}" aria-expanded="false">{{detail.selected.label}}</a>
+        <ul id="detaildrop{{$index}}" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
+        <li ng-repeat="option in detail.options"><a href="#" ng-click="selectOption(option, detail)">{{option.label}}</a></li>
+        </ul>
+        {{detail.label2}}
+      </span>
+      <span ng-show="selected(details).length > 0">
+      .
+      </span>
+      <a data-dropdown="narrowDown" aria-controls="narrowDown" aria-expanded="false">Narrow down</a>
+      <ul id="narrowDown" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
+      <li ng-repeat="detail in notSelected(details)"><a href="#" ng-click="selectDetail(detail)">{{detail.name}}</a></li>
+      </ul>
+    </div>
+    <div ng-show="result">
+      <div class="row" ng-show="result.total === 0">
+        No results found!
+      </div>
+      <div ng-show="result.total !== 0">
+        <div class="row" >
+          <a data-dropdown="funcsdropdown" aria-controls="funcsdropdown" aria-expanded="false" class="button tiny dropdown">{{labels[selected_statfun] || selected_statfun}}</a>
+          <ul id="funcsdropdown" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
+            <li ng-repeat="stats_func in stats_funcs"><a href="#" ng-click="$parent.selected_statfun = stats_func; find()">{{labels[stats_func] || stats_func}}</a></li>
+          </ul>
+        </div>
+        <div class="row hit" ng-repeat="hit in result.hits">
+          <div class="label secondary round">
+            mem: {{hit.sysinfo.MemTotal}}
+          </div>
+          <div class="label secondary round">
+            cores: {{hit.sysinfo['cpu cores']}}
+          </div>
+          <div class="label secondary round" ng-repeat="anyOpt in anyOptions(hit)">
+            {{anyOpt.name}}: {{anyOpt.value}}
+          </div>
+
+          <div>
+              <div class="progress success round">
+              <span class="meter" style="width: {{hit_score(hit)}}">{{hit.stats[dimension.selected.value][selected_statfun]}}&nbsp;ms</span>
+              </div>
+          </div>
+        </div>
+        <div class="row" >
+          {{result.total}} results found.
+        </div>
+        <div class="row" ng-show="pagesCount() > 1">
+          Page: <a ng-click="pageBack()">Previous</a>, {{page+1}}, <a ng-click="pageNext()">Next</a>, Total {{pagesCount()}} pages.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/vendor/jquery.js"></script>
+  <script src="js/foundation.min.js"></script>
+  <script src="js/foundation/foundation.dropdown.js"></script>
+  <script>
+  $(document).foundation();
+  </script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-987100-7', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+</html>
