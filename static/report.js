@@ -2,10 +2,7 @@ var app = angular.module('app', []);
 
 app.controller('DiagramCtrl', function($scope, dataModel) {
   $scope.R = R;
-  $scope.config = {
-    product: 'RabbitMQ',
-    dimension: 'latency'
-  };
+  $scope.config = {};
   $scope.page = 0;
   var allOptions = [];
 
@@ -62,6 +59,7 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
     productDetail.selected = R.find(R.where({value:undefined}), productDetail.options) || productDetail.options[0];
     $scope.options = [dimension, productDetail];
     $scope.dimension = dimension;
+    $scope.product = productDetail;
     $scope.details = allOptions.filter(function(opt) {return $scope.options.indexOf(opt) == -1; });
 
     $scope.find();
@@ -92,8 +90,8 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
     $scope.find();
   }
 
-  $scope.selectDetail = function(detail) {
-    detail.selected = detail.options[0];
+  $scope.selectOptionAny = function(detail) {
+    detail.selected = undefined; //R.find(R.where({value:undefined}), detail.options);
     $scope.find();
   }
 
@@ -102,6 +100,13 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
       return [];
     }
     return $scope.details.filter(R.not(R.where({selected: undefined})));
+  }
+
+  $scope.selectedNotAny = function() {
+    if (!$scope.details) {
+      return [];
+    }
+    return $scope.details.filter(function(d) {return d.selected != undefined && d.selected.value != undefined; });
   }
 
   $scope.notSelected = function() {
@@ -122,10 +127,20 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
     return percent;
   }
 
-  /* returns list options which were selected as 'any'*/
+  /* returns list of options which were selected as 'any'*/
   $scope.anyOptions = function(hit) {
     var ret = allOptions.filter(function (opt) {
       return opt.selected === undefined || (opt.selected.value === undefined);
+    })
+    .map(function (opt) {
+      return R.mixin(opt, {value: hit.params[opt.name]});
+    });
+    return ret;
+  }
+
+  $scope.notAnyOptions = function(hit) {
+    var ret = allOptions.filter(function (opt) {
+      return opt.selected != undefined || (opt.selected.value != undefined);
     })
     .map(function (opt) {
       return R.mixin(opt, {value: hit.params[opt.name]});
