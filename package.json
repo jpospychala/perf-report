@@ -7,16 +7,23 @@
   "author": "Jacek Pospychala <jacek.pospychala@gmail.com>",
   "dependencies": {
     "express": "^4.12.3",
-    "ramda": "^0.13.0"
+    "ramda": "^0.13.0",
+    "bluebird": "^2.9.30"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/jpospychala/perf-report"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node boot.js",
+    "test": "node_modules/.bin/mocha test"
   },
   "engines": {
     "node": "0.12.2"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "chai": "^3.0.0",
+    "request": "^2.58.0"
   }
 }
