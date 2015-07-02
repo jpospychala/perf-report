@@ -1,10 +1,22 @@
 var app = angular.module('app', []);
+app.filter('anyParams', function() {
+  return function(hit, allOptions) {
+    var ret = {};
+    allOptions.filter(function (opt) {
+      return opt.selected === undefined || (opt.selected.value === undefined);
+    })
+    .forEach(function (opt) {
+      ret[opt.name] = hit[opt.name];
+    });
+    return ret;
+  }
+});
 
 app.controller('DiagramCtrl', function($scope, dataModel) {
   $scope.R = R;
   $scope.config = {};
   $scope.page = 0;
-  var allOptions = [];
+  $scope.allOptions = [];
 
   var labels = {
     product: {label: ''},
@@ -50,24 +62,24 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
       } else {
         opt.label = '{'+option+'}';
       }
-      allOptions.push(opt);
+      $scope.allOptions.push(opt);
     });
-    var dimension = R.find(R.where({name: 'dimension'}), allOptions);
-    var productDetail = R.find(R.where({name: 'product'}), allOptions);
+    var dimension = R.find(R.where({name: 'dimension'}), $scope.allOptions);
+    var productDetail = R.find(R.where({name: 'product'}), $scope.allOptions);
 
     dimension.selected = R.find(R.where({value:'throughput'}), dimension.options) || dimension.options[0];
     productDetail.selected = R.find(R.where({value:undefined}), productDetail.options) || productDetail.options[0];
     $scope.options = [dimension, productDetail];
     $scope.dimension = dimension;
     $scope.product = productDetail;
-    $scope.details = allOptions.filter(function(opt) {return $scope.options.indexOf(opt) == -1; });
+    $scope.details = $scope.allOptions.filter(function(opt) {return $scope.options.indexOf(opt) == -1; });
 
     $scope.find();
   });
 
   $scope.find = function() {
     var query = {_n: $scope.page, _statsfun: $scope.selected_statfun };
-    allOptions.forEach(function (opt) {
+    $scope.allOptions.forEach(function (opt) {
       if (opt.selected) {
         query[opt.name] = opt.selected.value;
       }
@@ -118,28 +130,9 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
 
   $scope.stats_funcs = ['q1', 'q2', 'q3', 'min', 'max', 'stddev', 'q9', 'q99', 'mean'];
   $scope.selected_statfun = 'q99';
-  $scope.hit_score = function(hit) {
-    var range = $scope.result.stats_ranges[$scope.dimension.selected.value][$scope.selected_statfun];
-    if (range[1] - range[0] == 0) {
-      return '0%';
-    }
-    var percent = Math.round((hit.stats[$scope.dimension.selected.value][$scope.selected_statfun]) * 100/range[1]) + '%';
-    return percent;
-  }
-
-  /* returns list of options which were selected as 'any'*/
-  $scope.anyOptions = function(hit) {
-    var ret = allOptions.filter(function (opt) {
-      return opt.selected === undefined || (opt.selected.value === undefined);
-    })
-    .map(function (opt) {
-      return R.mixin(opt, {value: hit.params[opt.name]});
-    });
-    return ret;
-  }
 
   $scope.notAnyOptions = function(hit) {
-    var ret = allOptions.filter(function (opt) {
+    var ret = $scope.allOptions.filter(function (opt) {
       return opt.selected != undefined || (opt.selected.value != undefined);
     })
     .map(function (opt) {
