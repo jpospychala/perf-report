@@ -72,7 +72,7 @@
           <tr ng-repeat="hit in result.hits">
             <td>{{$index + result.n + 1}}
             </td>
-            <td ng-repeat="(name, value) in hit.params | anyParams:allOptions">
+            <td ng-repeat="value in hit.params | anyParams:allOptions">
               {{value}}
             </td>
             <td>

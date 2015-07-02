@@ -1,14 +1,12 @@
 var app = angular.module('app', []);
 app.filter('anyParams', function() {
   return function(hit, allOptions) {
-    var ret = {};
-    allOptions.filter(function (opt) {
+    return allOptions.filter(function (opt) {
       return opt.selected === undefined || (opt.selected.value === undefined);
     })
-    .forEach(function (opt) {
-      ret[opt.name] = hit[opt.name];
+    .map(function (opt) {
+      return hit[opt.name];
     });
-    return ret;
   }
 });
 
