@@ -1,4 +1,16 @@
 var app = angular.module('app', []);
+app.filter('humanizeKbSize', function() {
+  return function(num) {
+    num = parseInt(num);
+    var units = ['kB', 'MB', 'GB'];
+    unit = 0;
+    while ((num > 1000) && (unit < units.length)) {
+      unit++;
+      num = num/1000;
+    }
+    return Math.floor(num) + units[unit];
+  }
+});
 app.filter('anyParams', function() {
   return function(hit, allOptions) {
     return allOptions.filter(function (opt) {
@@ -17,17 +29,17 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
   $scope.allOptions = [];
 
   var labels = {
-    product: {label: ''},
-    dimension: {label: '$ of'},
-    language: {label: 'client written in'},
-    queueDurable: {label: ', $ queue', options: {'true': 'durable', 'false': 'non-durable'}},
-    autoAck: {label: ' and ack is ', options: {'true': '', 'false': ''}},
-    producers: {label: ' has $ producers'},
-    deliveryMode: {label: '$ messages', options: {'1': 'non-persistent', '2': 'persistent'}},
-    prefetchCount: {label: ' at most $ prefetched messages'},
-    msgSendDelay: {label: ' messages are sent with $ delay', options: {0: 'no'}},
-    msgSize: {label: ' messages of $ bytes'},
-    time: {label: ' each message is sent every $ msec'},
+    product: {},
+    dimension: {},
+    language: {},
+    queueDurable: {options: {'true': 'durable', 'false': 'non-durable'}},
+    autoAck: {options: {'true': '', 'false': ''}},
+    producers: {},
+    deliveryMode: {options: {'1': 'non-persistent', '2': 'persistent'}},
+    prefetchCount: {},
+    msgSendDelay: {options: {0: 'no'}},
+    msgSize: {},
+    time: {},
 
     q1: '0.25 quantile',
     q2: 'median',
@@ -53,13 +65,6 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
       if (options[option].length > 1) {
         opt.options.push({value: undefined, label: '...'});
       }
-      if (labels[option]) {
-        var labelparts = labels[option].label.split('$');
-        opt.label = labelparts[0];
-        opt.label2 = labelparts[1];
-      } else {
-        opt.label = '{'+option+'}';
-      }
       $scope.allOptions.push(opt);
     });
     var dimension = R.find(R.where({name: 'dimension'}), $scope.allOptions);
@@ -84,9 +89,6 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
     });
     dataModel.search(query)
     .then(function (result) {
-      result.hits.forEach(function (hit) {
-        hit.sysinfo.MemTotal = humanizeKbSize(parseInt(hit.sysinfo.MemTotal));
-      });
       $scope.result = result;
     });
   };
@@ -157,16 +159,6 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
 
   $scope.pagesCount = function() {
     return $scope.result && Math.ceil($scope.result.total / $scope.result.size) || 0;
-  }
-
-  function humanizeKbSize(num) {
-    var units = ['kB', 'MB', 'GB'];
-    unit = 0;
-    while ((num > 1000) && (unit < units.length)) {
-      unit++;
-      num = num/1000;
-    }
-    return Math.floor(num) + units[unit];
   }
 });
 
