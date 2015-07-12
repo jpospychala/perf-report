@@ -1,21 +1,10 @@
-app.controller('DiagramCtrl', function($scope, dataModel) {
+app.controller('ResultsCtrl', function($scope, dataModel) {
   $scope.R = R;
   $scope.config = {};
   $scope.page = 0;
   $scope.allOptions = [];
 
   var labels = {
-    product: {},
-    dimension: {},
-    language: {},
-    queueDurable: {options: {'true': 'durable', 'false': 'non-durable'}},
-    autoAck: {options: {'true': '', 'false': ''}},
-    producers: {},
-    deliveryMode: {options: {'1': 'non-persistent', '2': 'persistent'}},
-    prefetchCount: {},
-    msgSendDelay: {options: {0: 'no'}},
-    msgSize: {},
-    time: {},
 
     q1: '0.25 quantile',
     q2: 'median',
@@ -37,7 +26,7 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
     R.keys(options).forEach(function(option) {
       var opt = {name: option};
       opt.options = options[option].map(function(value) {
-        return {value: value, label: R.path('options.'+value, labels[option]) || value};
+        return {value: value, label: value};
       });
       if (options[option].length > 1) {
         opt.options.push({value: undefined, label: '...'});
@@ -67,6 +56,7 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
     dataModel.search(query)
     .then(function (result) {
       $scope.result = result;
+      $(document).foundation();
     });
   };
 
@@ -137,18 +127,4 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
   $scope.pagesCount = function() {
     return $scope.result && Math.ceil($scope.result.total / $scope.result.size) || 0;
   }
-});
-
-app.service('dataModel', function($http, $q) {
-  return new function() {
-    var self = this;
-    self.summary = $http.get('/api/summary').then(R.path('data'));
-    self.options = $http.get('/api/options').then(R.path('data'));
-    self.search = function(query) {
-      return $http.get('/api/search', {params: query}).then(R.path('data'));
-    }
-    self.n = function(n) {
-      return $http.get('/api/n/'+n).then(R.path('data'));
-    }
-  };
 });

@@ -1,4 +1,4 @@
-<div ng-controller="DiagramCtrl">
+<div ng-controller="ResultsCtrl">
   <div ng-show="result">
     <div class="row" ng-show="result.total === 0">
       No results found!
@@ -32,7 +32,7 @@
           <th ng-repeat="detail in notSelected() track by detail.name">
             <a data-dropdown="detaildrop{{$index}}" aria-controls="detaildrop{{$index}}" aria-expanded="false">{{detail.name}}</a>
             <ul id="detaildrop{{$index}}" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
-            <li ng-repeat="option in detail.options"><a href="#" ng-click="selectOption(option, detail)">{{option.label}}</a></li>
+            <li ng-repeat="option in detail.options"><a href="#" ng-click="selectOption(option, detail)">{{option.value}}</a></li>
             </ul>
           </th>
           <th>
