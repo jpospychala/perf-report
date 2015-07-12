@@ -9,6 +9,9 @@ describe('server', function() {
     var options = {
       port: 8799,
       report_dir: 'test/',
+      frontend_options: {
+        raw_data_location: 'http://localhost/'
+      },
       logging: false
     }
     return server.start(options);
@@ -16,7 +19,10 @@ describe('server', function() {
 
   it('should expose summary', function() {
     return request("http://localhost:8799/api/summary", {json: true}).then(function(result) {
-      expect(result[1]).to.deep.equal({length: 80});
+      expect(result[1]).to.deep.equal({
+        length: 80,
+        raw_data_location: 'http://localhost/'
+      });
     });
   });
 

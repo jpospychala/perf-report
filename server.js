@@ -22,9 +22,9 @@ module.exports.start = function(options) {
   }
 
   app.get('/api/summary', function (req, res) {
-    res.json({
+    res.json(R.merge({
       length: data.length
-    });
+    }, options.frontend_options));
   });
 
   app.get('/api/n/:number', function (req, res) {
