@@ -1,27 +1,3 @@
-var app = angular.module('app', []);
-app.filter('humanizeKbSize', function() {
-  return function(num) {
-    num = parseInt(num);
-    var units = ['kB', 'MB', 'GB'];
-    unit = 0;
-    while ((num > 1000) && (unit < units.length)) {
-      unit++;
-      num = num/1000;
-    }
-    return Math.floor(num) + units[unit];
-  }
-});
-app.filter('anyParams', function() {
-  return function(hit, allOptions) {
-    return allOptions.filter(function (opt) {
-      return opt.selected === undefined || (opt.selected.value === undefined);
-    })
-    .map(function (opt) {
-      return hit[opt.name];
-    });
-  }
-});
-
 app.controller('DiagramCtrl', function($scope, dataModel) {
   $scope.R = R;
   $scope.config = {};
@@ -53,6 +29,7 @@ app.controller('DiagramCtrl', function($scope, dataModel) {
   dataModel.summary
   .then(function(summary) {
     $scope.length = summary.length;
+    $scope.raw_data_location = summary.raw_data_location;
   });
 
   dataModel.options

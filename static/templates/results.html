@@ -1,0 +1,67 @@
+<div ng-controller="DiagramCtrl">
+  <div ng-show="result">
+    <div class="row" ng-show="result.total === 0">
+      No results found!
+    </div>
+    <div class="row" ng-show="result.total !== 0">
+      <table>
+        <tr>
+          <th rowspan="2">No.
+          </th>
+          <th colspan="{{notSelected().length}}">
+            <a data-dropdown="productdd" aria-controls="productdd" aria-expanded="false">{{product.selected.value}}</a>
+            <ul id="productdd" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
+            <li ng-repeat="option in product.options"><a href="#" ng-click="product.selected = option; find()">{{option.value}}</a></li>
+            </ul>
+            <div ng-show="selectedNotAny().length > 0">
+              <a ng-repeat="detail in selectedNotAny() track by detail.name" ng-click="selectOptionAny(detail)">
+                {{detail.name}}={{detail.selected.value}}
+              </a>
+            </div>
+          </th>
+          <th>
+            <a data-dropdown="dimensiondd" aria-controls="dimensiondd" aria-expanded="true">{{dimension.selected.value}}</a>
+            <ul id="dimensiondd" class="f-dropdown" data-dropdown-content aria-hidden="false" tabindex="-1">
+              <li ng-repeat="option in dimension.options"><a href="#" ng-click="dimension.selected = option; find()">{{option.value}}</a></li>
+            </ul>
+          </th>
+          <th rowspan="2">&nbsp;
+          </th>
+        </tr>
+        <tr>
+          <th ng-repeat="detail in notSelected() track by detail.name">
+            <a data-dropdown="detaildrop{{$index}}" aria-controls="detaildrop{{$index}}" aria-expanded="false">{{detail.name}}</a>
+            <ul id="detaildrop{{$index}}" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
+            <li ng-repeat="option in detail.options"><a href="#" ng-click="selectOption(option, detail)">{{option.label}}</a></li>
+            </ul>
+          </th>
+          <th>
+            <a data-dropdown="funcsdropdown" aria-controls="funcsdropdown" aria-expanded="false">{{labels[selected_statfun] || selected_statfun}}</a>
+            <ul id="funcsdropdown" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
+              <li ng-repeat="stats_func in stats_funcs"><a href="#" ng-click="$parent.selected_statfun = stats_func; find()">{{labels[stats_func] || stats_func}}</a></li>
+            </ul>
+          </th>
+        </tr>
+        <tr ng-repeat="hit in result.hits">
+          <td>{{$index + result.n + 1}}
+          </td>
+          <td ng-repeat="value in hit.params | anyParams:allOptions">
+            {{value}}
+          </td>
+          <td>
+            {{hit.stats[dimension.selected.value][selected_statfun]}}
+          </td>
+          <td>
+            <a ui-sref="runDetails({id: hit.id})">...</a>
+          </td>
+        </tr>
+      </table>
+      <div>
+        {{result.total}} results found.
+      </div>
+      <div ng-show="pagesCount() > 1">
+        Page: <a ng-click="pageBack()">Previous</a>, {{page+1}}, <a ng-click="pageNext()">Next</a>, Total {{pagesCount()}} pages.
+      </div>
+    </div>
+  </div>
+</div>
