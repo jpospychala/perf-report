@@ -33,7 +33,8 @@ describe('server', function() {
         language: ['c', 'nodejs'],
         n: [2, 10],
         product: ['sleep'],
-        time: [0, 5, 10, 50]
+        time: [0, 5, 10, 50],
+        machine: ['local0']
       });
     });
   });

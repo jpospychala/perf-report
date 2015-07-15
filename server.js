@@ -5,7 +5,11 @@ var Promise = require('bluebird');
 var app = express();
 
 module.exports.start = function(options) {
-  var data = JSON.parse(fs.readFileSync(options.report_dir + '/result.json'));
+  var data = JSON.parse(fs.readFileSync(options.report_dir + '/result.json'))
+    .map(function(entry) {
+      entry.params.machine = entry.sysinfo.oslabel;
+      return entry;
+    });
 
   app.use(express.static('static'));
 
